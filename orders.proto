@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+service OrderService {
+  // RPC para crear un pedido
+  rpc CreateOrder (OrderRequest) returns (OrderResponse);
+  // RPC para obtener el estado de un pedido
+  rpc GetOrderStatus (OrderStatusRequest) returns (OrderStatusResponse);
+}
+
+message OrderRequest {
+  string order_id = 1;
+  string product_name = 2;
+  double price = 3;
+  string payment_method = 4;
+  string card_brand = 5;
+  string bank = 6;
+  string shipping_region = 7;
+  string shipping_address = 8;
+  string customer_email = 9;
+}
+
+message OrderResponse {
+  string message = 1;
+  string order_id = 2;
+}
+
+message OrderStatusRequest {
+  string order_id = 1;
+}
+
+message OrderStatusResponse {
+  string status = 1;
+}
