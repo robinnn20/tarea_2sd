@@ -55,7 +55,7 @@ class EmailNotificationService:
                 El equipo de ventas
                 """
             },
-            'Preparación': {
+            'Preparacion': {
                 'subject': 'Tu pedido está en preparación',
                 'body': """
                 Estimado {customer_name},
