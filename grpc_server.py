@@ -24,16 +24,16 @@ def delivery_report(err, msg):
     else:
         print(f"Mensaje enviado a {msg.topic()} [{msg.partition()}]")
 
-def process_order_states(order_id, fsm_pedido):
+def process_order_states(order_id,client_mail, fsm_pedido):
     """
     Procesa todas las transiciones de estado del pedido de manera asíncrona
     """
     estados_tiempos = {
-        'Procesando': (1, 3),
-        'Preparación': (2, 4),
-        'Enviado': (3, 5),
-        'Entregado': (2, 4),
-        'Finalizado': (1, 2)
+        'Procesando': (3, 5),
+        'Preparación': (4, 6),
+        'Enviado': (5, 7),
+        'Entregado': (6, 8),
+        'Finalizado': (3, 4)
     }
     
     current_state = fsm_pedido.estado_actual()
@@ -47,9 +47,9 @@ def process_order_states(order_id, fsm_pedido):
         current_state = fsm_pedido.estado_actual()
         
         # Enviar actualización del estado a Kafka
-        state_update = f"Actualización de pedido - ID: {order_id}, Nuevo estado: {current_state}"
+        state_update = f"Actualización de pedido - ID: {order_id}, Estado: {current_state}, Cliente: {client_mail}"
         producer.produce(
-            'order_updates',
+            'orders',
             key=str(uuid4()),
             value=state_update,
             callback=delivery_report
@@ -91,7 +91,7 @@ class OrderServiceServicer(orders_pb2_grpc.OrderServiceServicer):
         # Iniciar el procesamiento de estados en un hilo separado
         thread = threading.Thread(
             target=process_order_states,
-            args=(request.order_id, fsm_pedido)
+            args=(request.order_id,request.customer_email, fsm_pedido)
         )
         thread.start()
         
